@@ -4,10 +4,25 @@ import { Github, Linkedin, Mail, ExternalLink, Code, Database, Brain, LineChart,
 const Portfolio = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [activeSection, setActiveSection] = useState('skills');
+  const [isMobile, setIsMobile] = useState(false);
+  const [navbarVisible, setNavbarVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setNavbarVisible(currentScrollY < lastScrollY || currentScrollY < 100);
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
 
   const projects = [
     {
@@ -102,6 +117,35 @@ const Portfolio = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
+      {/* 3D Animated Navbar */}
+      <nav className={`fixed w-full z-50 transition-all duration-300 ${
+        navbarVisible ? 'top-0' : '-top-20'
+      } bg-gray-800/80 backdrop-blur-md`}>
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <div className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+              CM
+            </div>
+            <div className="hidden md:flex space-x-8">
+              {['Home', 'Projects', 'Skills', 'Blog', 'Contact'].map((item) => (
+                <a
+                  key={item}
+                  href={`#${item.toLowerCase()}`}
+                  className="relative px-3 py-2 group"
+                >
+                  <span className="relative z-10 text-gray-300 group-hover:text-white transition-colors">
+                    {item}
+                  </span>
+                  <span className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/10 transform group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300 rounded-lg" />
+                </a>
+              ))}
+            </div>
+            <div className="md:hidden">
+              <Menu className="w-6 h-6" />
+            </div>
+          </div>
+        </div>
+      </nav>
       {/* Hero Section */}
       <div className={`h-screen flex items-center justify-center transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
         <div className="max-w-4xl mx-auto px-4">
